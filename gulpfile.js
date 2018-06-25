@@ -10,21 +10,20 @@ var cache = require('gulp-cache');
 var del = require('del');
 var runSequence = require('run-sequence');
 
-// Basic Gulp task syntax
-gulp.task('hello', function() {
-    console.log('Hello Zell!');
-})
-
 // Development Tasks
 // -----------------
 
 // Start browserSync server
 gulp.task('browserSync', function() {
-    browserSync({
-        server: {
-            baseDir: 'assets'
-        }
-    })
+
+    var files = [
+        '**/*.php',
+        'assets/images/**/*.{png,jpg,gif}'
+    ];
+
+    browserSync.init(files, {
+        proxy: 'localhost:8080'
+    });
 })
 
 gulp.task('sass', function() {
@@ -39,7 +38,7 @@ gulp.task('sass', function() {
 // Watchers
 gulp.task('watch', function() {
     gulp.watch('assets/scss/**/*.scss', ['sass']);
-    gulp.watch('assets/*.html', browserSync.reload);
+    gulp.watch('/*.php', browserSync.reload);
     gulp.watch('assets/js/**/*.js', browserSync.reload);
 })
 
@@ -49,7 +48,7 @@ gulp.task('watch', function() {
 // Optimizing CSS and JavaScript
 gulp.task('useref', function() {
 
-    return gulp.src('assets/*.html')
+    return gulp.src('assets/*.php')
         .pipe(useref())
         .pipe(gulpIf('*.js', uglify()))
         .pipe(gulpIf('*.css', cssnano()))
